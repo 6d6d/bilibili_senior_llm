@@ -130,4 +130,4 @@ while True:
 
         
     click(click_x, click_y)
-    time.sleep(1)
+    time.sleep(1.5)

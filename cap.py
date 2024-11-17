@@ -4,14 +4,43 @@ import numpy as np
 import win32gui
 import win32ui
 import win32con
+import win32api
+import ctypes
 
+try:
+    ctypes.windll.shcore.SetProcessDpiAwareness(2)  # Windows 8.1 及以上版本
+except AttributeError:
+    ctypes.windll.user32.SetProcessDPIAware()  # 适用于 Windows 7
+
+# 获取窗口 DPI 缩放比例
+def get_window_dpi(hwnd):
+    """
+    获取指定窗口的 DPI 缩放系数
+    """
+    try:
+        # Windows 10 (version 1607) 及更高版本支持 GetDpiForWindow
+        dpi = ctypes.windll.user32.GetDpiForWindow(hwnd)
+    except AttributeError:
+        # 使用系统默认 DPI
+        dpi = ctypes.windll.user32.GetDeviceCaps(win32gui.GetDC(0), 88)  # 88 是 LOGPIXELSX 的常量
+    return dpi / 96.0
 
 def capture_window(hwnd):
     """
     截取窗口内容，包括边框和标题栏。
     """
+    # 获取 DPI 缩放系数
+    dpi_scale = get_window_dpi(hwnd)
+    
     # 获取窗口的左、上、右、下位置
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
+    #
+    # 调整坐标以考虑 DPI 缩放
+    left = int(left * dpi_scale)
+    top = int(top * dpi_scale)
+    right = int(right * dpi_scale)
+    bottom = int(bottom * dpi_scale)
+    
     width = right - left
     height = bottom - top
 
@@ -98,9 +127,11 @@ def get_screenshot(titile="BlueStacks App Player"):
 
         # 截取窗口
         screenshot, (win_left, win_top, win_right, win_bottom) = capture_window(hwnd)
+        screenshot.save("screenshot.jpg")
 
         # 第一步：自动去除黑边
         no_border_img, (black_left, black_top, black_right, black_bottom) = remove_black_borders(screenshot)
+        no_border_img.save("no_border_img.jpg")
 
         custom_crop_ratios = (0.0, 0.2, 1.0, 0.7)  # 按比例裁剪 (左, 上, 右, 下)
         final_img, (crop_left, crop_top, crop_right, crop_bottom) = crop_image_by_ratio(no_border_img, custom_crop_ratios)
@@ -111,7 +142,7 @@ def get_screenshot(titile="BlueStacks App Player"):
         absolute_top = win_top + black_top + crop_top
         absolute_right = win_left + black_left + crop_right
         absolute_bottom = win_top + black_top + crop_bottom
-        final_img.save("screenshot.jpg")
+        final_img.save("screensfinal_imghot.jpg")
         return final_img, (absolute_left, absolute_top, absolute_right, absolute_bottom)
         # # 保存最终裁剪后的图像
 
