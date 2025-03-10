@@ -1,0 +1,4 @@
+paddleocr==2.10.0
+paddlepaddle==2.6.2
+PyAutoGUI==0.9.54
+pywin32==309
