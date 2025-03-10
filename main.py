@@ -73,7 +73,7 @@ def merge_ocr_results(results, threshold=20):
     return merged_results
 
 while True:
-    screenshot, (absolute_left, absolute_top, absolute_right, absolute_bottom) = get_screenshot("BlueStacks App Player")
+    screenshot, (absolute_left, absolute_top, absolute_right, absolute_bottom) = get_screenshot("BlueStacks") #BlueStacks4
     img_array = np.array(
         screenshot
     )  # 还记得上面截图得到的 screenshot 嘛，在这里被转化成了 numpy 数组
