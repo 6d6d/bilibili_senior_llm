@@ -1,8 +1,14 @@
 from openai import OpenAI
-client = OpenAI()
+client = OpenAI(
+    # 替换为您需要调用的模型服务Base Url
+    base_url="<BASE_URL>",
+    # 环境变量中配置您的API Key
+    api_key=os.environ.get("ARK_API_KEY")
+)
 def get_ans(questionBody):
     completion = client.chat.completions.create(
-        model="gpt-4o",
+        # 替换为你需要使用的ai大模型
+        model="<Model>",
         messages= [
                 {
                     "content": "- 你是一个通晓古今的百科全书，拥有丰富的学识和答题经验。现在需要你根据用户输入的问题 <Question> 以及选项 <Option> 选出一个最合适的选项 <Answer>，然后输出选项的内容。\n- 需要注意，你的答案仅能是从选项中选择，不能自由发挥。\n- 题目类型都是选择题，一部分是问题选项，另一部分需要你从选项中选出一个最合适的填补题目的空缺。题目的空缺会用连续的下划线__表示。\n- 你只需要回答你认为正确的选项，不需要做出任何解释。你的答案需要有理论依据，不可以回答虚构的答案。\n",
